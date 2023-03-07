@@ -7,14 +7,29 @@ import UrlForm from '../UrlForm/UrlForm';
 const App = () => {
  
   const [urls, setURLS] = useState([])
+  const [error, setError] = useState(true)
 
   useEffect(() => {
-    getUrls()
-    .then((data) => setURLS(data.urls))
+    updateURLS()
   }, [])
+
+  let updateURLS = () => {
+    getUrls()
+      .then((data) => {
+        if (data) {
+          setURLS(data.urls);
+          setError("");
+        } else {
+          setError("failed to fetch");
+        }
+      })
+      .catch((error) => {
+        console.log(`An error occurred: ${error}`);
+        setError(error.message);
+      });
+  }
   
   let postURL = (url) => {
-    console.log(urls)
      fetch('http://localhost:3001/api/v1/urls', {
         method: "POST",
         body: JSON.stringify(url),
@@ -24,15 +39,17 @@ const App = () => {
         if (response.ok) {
           response.json();
           console.log("Posted!", response)
-          getUrls()
-          .then((data) => setURLS(data.urls))
+          updateURLS()
         }
         else if (!response.ok) {
+          response.json();
           console.log("Response Not Ok", response)
+          setError(response.message)
         }
       })
       .catch((error) => {
         console.log(`An error occurred: ${error.message}`);
+        setError(error.message);
       });
   }
   
@@ -41,9 +58,10 @@ const App = () => {
     <main className="App">
       <header>
         <h1>URL Shortener</h1>
-        <UrlForm postURL={postURL}/>
+        <UrlForm postURL={postURL} />
       </header>
-      <UrlContainer urls={urls}/>
+      {!error && <UrlContainer urls={urls} />}
+      {error && <p className="error-message">Error: {error}</p>}
     </main>
   );
   

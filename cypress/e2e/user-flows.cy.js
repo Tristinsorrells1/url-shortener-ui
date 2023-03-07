@@ -24,37 +24,37 @@ describe("URL shortener user flows", () => {
       }
     );
 
-       cy.intercept(
-         {
-           method: "POST",
-           url: "http://localhost:3001/api/v1/urls",
-         },
-         {
-           statusCode: 200,
-           body: {
-             urls: [
-               {
-                 id: 1,
-                 long_url: "https://frontend.turing.edu/",
-                 title: "Cypress Stub #1",
-                 short_url: "http://localhost:3001/useshorturl/3",
-               },
-               {
-                 id: 2,
-                 long_url: "https://calendar.google.com/calendar/u/0/r",
-                 title: "Cypress Stub #2",
-                 short_url: "http://localhost:3001/useshorturl/2",
-               },
-               {
-                 id: 3,
-                 long_url: "http://localhost:9000/file=cypress/",
-                 title: "Cypress Stub #3",
-                 short_url: "http://localhost:3001/useshorturl/1",
-               },
-             ],
-           },
-         }
-       );
+    cy.intercept(
+      {
+        method: "POST",
+        url: "http://localhost:3001/api/v1/urls",
+      },
+      {
+        statusCode: 200,
+        body: {
+          urls: [
+            {
+              id: 1,
+              long_url: "https://frontend.turing.edu/",
+              title: "Cypress Stub #1",
+              short_url: "http://localhost:3001/useshorturl/3",
+            },
+            {
+              id: 2,
+              long_url: "https://calendar.google.com/calendar/u/0/r",
+              title: "Cypress Stub #2",
+              short_url: "http://localhost:3001/useshorturl/2",
+            },
+            {
+              id: 3,
+              long_url: "http://localhost:9000/file=cypress/",
+              title: "Cypress Stub #3",
+              short_url: "http://localhost:3001/useshorturl/1",
+            },
+          ],
+        },
+      }
+    );
 
     cy.visit("http://localhost:3000");
   });
@@ -130,4 +130,24 @@ describe("URL shortener user flows", () => {
     cy.get("a").eq(2).should("contain", "http://localhost:3001/useshorturl/1");
     cy.get("p").eq(2).should("contain", "http://localhost:9000/file=cypress/");
   });
+
+  it("Should notify the user if there is a server error", () => {
+    cy.intercept(
+      {
+        method: "GET",
+        url: "http://localhost:3001/api/v1/urls",
+      },
+      {
+        statusCode: 500
+      }
+      );
+      
+    cy.get("input[class='title']").type("Doesn't matter because stubbing");
+    cy.get("input[class='url']").type("http://localhost:9000/file=cypress/");
+    cy.get("button").click();
+
+    cy.get("p[class='error-message']").should("be.visible")
+    cy.get("p[class='error-message']").should("contain", "Error: failed to fetch");
+  });
+  
 });
