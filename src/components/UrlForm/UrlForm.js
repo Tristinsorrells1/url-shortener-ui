@@ -19,6 +19,7 @@ class UrlForm extends Component {
     this.clearInputs();
     
     let url = {
+      key: Date.now(),
       long_url: this.state.urlToShorten,
       title: this.state.title
     }
@@ -35,6 +36,7 @@ class UrlForm extends Component {
     return (
       <form>
         <input
+          class='title'
           type='text'
           placeholder='Title...'
           name='title'
@@ -43,6 +45,7 @@ class UrlForm extends Component {
         />
 
         <input
+          class='url'
           type='text'
           placeholder='URL to Shorten...'
           name='urlToShorten'
