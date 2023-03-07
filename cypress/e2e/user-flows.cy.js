@@ -121,7 +121,7 @@ describe("URL shortener user flows", () => {
       }
     );
 
-    cy.get("input[class='title']").type("Cypress Test #3");
+    cy.get("input[class='title']").type("Doesn't matter because stubbing");
     cy.get("input[class='url']").type("http://localhost:9000/file=cypress/");
     cy.get("button").click()
   
