@@ -1,32 +1,51 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { getUrls } from '../../apiCalls';
 import UrlContainer from '../UrlContainer/UrlContainer';
 import UrlForm from '../UrlForm/UrlForm';
 
-export class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      urls: []
-    }
-  }
+const App = () => {
+ 
+  const [urls, setURLS] = useState([])
 
-  componentDidMount() {
-  }
+  useEffect(() => {
+    getUrls()
+    .then((data) => setURLS(data.urls))
+  }, [])
 
-  render() {
-    return (
-      <main className="App">
-        <header>
-          <h1>URL Shortener</h1>
-          <UrlForm />
-        </header>
-
-        <UrlContainer urls={this.state.urls}/>
-      </main>
-    );
+  let postURL = (url) => {
+     fetch('http://localhost:3001/api/v1/urls', {
+        method: "POST",
+        body: JSON.stringify(url),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then((response) => {
+        if (response.ok) {
+          response.json();
+          console.log("Posted!", response)
+          getUrls()
+          .then((data) => setURLS(data.urls))
+        }
+        else if (!response.ok) {
+          console.log("Response Not Ok", response)
+        }
+      })
+      .catch((error) => {
+        console.log(`An error occurred: ${error.message}`);
+      });
   }
+  
+
+  return (
+    <main className="App">
+      <header>
+        <h1>URL Shortener</h1>
+        <UrlForm postURL={postURL}/>
+      </header>
+      <UrlContainer urls={urls}/>
+    </main>
+  );
+  
 }
 
 export default App;
