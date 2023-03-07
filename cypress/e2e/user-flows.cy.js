@@ -138,7 +138,7 @@ describe("URL shortener user flows", () => {
         url: "http://localhost:3001/api/v1/urls",
       },
       {
-        statusCode: 500
+        statusCode: 500,
       }
       );
       
@@ -149,5 +149,5 @@ describe("URL shortener user flows", () => {
     cy.get("p[class='error-message']").should("be.visible")
     cy.get("p[class='error-message']").should("contain", "Error: failed to fetch");
   });
-  
+
 });

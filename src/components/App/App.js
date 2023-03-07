@@ -16,16 +16,12 @@ const App = () => {
   let updateURLS = () => {
     getUrls()
       .then((data) => {
-        if (data) {
-          setURLS(data.urls);
-          setError("");
-        } else {
-          setError("failed to fetch");
-        }
+        setURLS(data.urls);
+        setError("");
       })
       .catch((error) => {
         console.log(`An error occurred: ${error}`);
-        setError(error.message);
+        setError('Error: failed to fetch');
       });
   }
   
